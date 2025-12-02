@@ -11,7 +11,7 @@ def process_face(img):
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     resized = cv2.resize(blurred, (128, 128))
     fd, _ = hog(resized, orientations=9, pixels_per_cell=(8, 8),
-                cells_per_block=(2, 2))
+                cells_per_block=(2, 2), visualize=True, channel_axis=None)
     return fd
 
 
@@ -37,12 +37,15 @@ def detect_wanted_person(ref_path, crowd_path, threshold=0.5):
     result = crowd_img.copy()
     matches = 0
 
-    for i, (x, y, w, h) in enum(crowd_faces):
+    for i, (x, y, w, h) in enumerate(crowd_faces):
         features = process_face(crowd_img[y:y + h, x:x + w])
         distance = np.linalg.norm(ref_features - features)
         similarity = 1 / (1 + distance)
 
-
+        if similarity > threshold:
+            matches += 1
+            cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(result, f"{similarity:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     print(f"Found {matches} matches")
     cv2.imwrite('result.jpg', result)
