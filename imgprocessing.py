@@ -19,8 +19,7 @@ def detect_wanted_person(ref_path, crowd_path, threshold=0.5):
     if not os.path.exists(ref_path) or not os.path.exists(crowd_path):
         print("ERROR: Image files not found")
         return 
-
-
+        
     ref_img = cv2.imread(ref_path)
     crowd_img = cv2.imread(crowd_path)
 
